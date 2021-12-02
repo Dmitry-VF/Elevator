@@ -41,7 +41,7 @@ namespace Elevator
                     }
                     else
                     {
-                        Console.WriteLine("There is no floor with such a number");
+                        ShowWarningMessage();
                     }
                 }
             }
