@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Scenarios\01.Calling while moving.txt" />
     <None Remove="Scenarios\01.Exit.txt" />
     <None Remove="Scenarios\01.Moving with stops.txt" />
     <None Remove="Scenarios\02.Arranging stops.txt" />
     <None Remove="Scenarios\02.Choose floor.txt" />
+    <None Remove="Scenarios\02.Observing order of calls.txt" />
+    <None Remove="Scenarios\02.Quit at any floor.txt" />
     <None Remove="Scenarios\03.Elevator movement.txt" />
     <None Remove="Scenarios\03.Moving in both directions.txt" />
     <None Remove="Scenarios\04.Choose shortest path.txt" />
@@ -18,11 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Scenarios\01.Moving with stops.txt" />
-    <EmbeddedResource Include="Scenarios\02.Arranging stops.txt" />
-    <EmbeddedResource Include="Scenarios\03.Moving in both directions.txt" />
-    <EmbeddedResource Include="Scenarios\04.Choose shortest path.txt" />
-    <EmbeddedResource Include="Scenarios\05.Consider number of calls.txt" />
+    <EmbeddedResource Include="Scenarios\01.Calling while moving.txt" />
+    <EmbeddedResource Include="Scenarios\02.Observing order of calls.txt" />
+    <EmbeddedResource Include="Scenarios\02.Quit at any floor.txt" />
   </ItemGroup>
 
   <ItemGroup>

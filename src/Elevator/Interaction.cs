@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Elevator
 {
@@ -8,7 +10,7 @@ namespace Elevator
     {
         public override void Introduction()
         {
-            Console.WriteLine("Enter the floor numbers where the elevator should stop, then enter Go");
+            Console.WriteLine("Enter the required floor");
             Console.WriteLine("Press X to quit");
         }
 
@@ -27,26 +29,41 @@ namespace Elevator
                     return State.End;
                 }
 
-                if (string.Equals(input, "Go", StringComparison.OrdinalIgnoreCase))
-
+                if (int.TryParse(input, out var result) && result > 0 && result <= Elevator.FloorsCount)
                 {
+                    Stops.Add(result);
                     break;
                 }
-
-                if (int.TryParse(input, out var result))
+                else
                 {
-                    if (result > 0 && result <= Elevator.FloorsCount)
-                    {
-                        Stops.Add(result);
-                    }
-                    else
-                    {
-                        ShowWarningMessage();
-                    }
+                    ShowWarningMessage();
                 }
             }
 
             return StartMove();
+        }
+
+        private bool ParseInputWhileExecuting()
+        {
+            var res = true;
+            Task.Run(() =>
+            {
+                if (Console.KeyAvailable)
+                {
+                    var parsed = int.TryParse(Console.ReadLine(), out var result);
+                    if (result > 0 && result <= Elevator.FloorsCount)
+                    {
+                        Stops.Add(result);
+                        res = true;
+                    }
+                    else
+                    {
+                        res = false;
+                    }
+                };
+            }).Wait();
+
+            return res;
         }
 
         private State StartMove()
@@ -75,7 +92,7 @@ namespace Elevator
                 RunInGivenDirection(stop, true);
                 return;
             }
-            
+
             if (Elevator.CurrentFloor > stop)
             {
                 RunInGivenDirection(stop, false);
@@ -88,8 +105,15 @@ namespace Elevator
             // if direction is true, it will move up, otherwise down
             var number = direction ? 1 : -1;
 
-            for (int i = Elevator.CurrentFloor; direction ? i <= stop : i >= stop; i+= number)
+            for (int i = Elevator.CurrentFloor; direction ? i <= stop : i >= stop; i += number)
             {
+                if (!ParseInputWhileExecuting())
+                {
+                    ShowWarningMessage();
+                }
+
+                Thread.Sleep(10);
+
                 Console.WriteLine($" [{i}]");
 
                 var stopsLeft = Stops.Except(VisitedStops).ToArray();
@@ -105,6 +129,8 @@ namespace Elevator
                 }
 
                 Elevator.CurrentFloor = i;
+
+                
             }
         }
 
