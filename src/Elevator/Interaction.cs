@@ -23,47 +23,62 @@ namespace Elevator
             {
                 var input = Console.ReadLine();
 
-                if (string.Equals(input, "X", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(input, "x") || string.Equals(input, "X"))
                 {
                     Console.WriteLine("Have a good day!");
                     return State.End;
                 }
 
-                if (int.TryParse(input, out var result) && result > 0 && result <= Elevator.FloorsCount)
+                var parsed = int.TryParse(input, out var result);
+                if (parsed)
                 {
-                    Stops.Add(result);
-                    break;
-                }
-                else
-                {
-                    ShowWarningMessage();
+                    if (result > 0 && result <= Elevator.FloorsCount)
+                    {
+                        Stops.Add(result);
+                        break;
+                    }
+                    else
+                    {
+                        ShowWarningMessage();
+                    }
                 }
             }
 
             return StartMove();
         }
 
-        private bool ParseInputWhileExecuting()
+        private Task ParseInputWhileExecuting()
         {
-            var res = true;
-            Task.Run(() =>
+            var task = Task.Run(() =>
             {
-                if (Console.KeyAvailable)
+                var line = Console.ReadLine();
+                if (Elevator.CurrentState == State.Moving && string.Equals(line, "x", StringComparison.OrdinalIgnoreCase))
                 {
-                    var parsed = int.TryParse(Console.ReadLine(), out var result);
+                    Console.WriteLine(" [<<] [>>]");
+                }
+                if (string.Equals(line, "x", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Have a good day!");
+                    Environment.Exit(0);
+                    return;
+                }
+                var parsed = int.TryParse(line, out var result);
+                if (parsed)
+                {
                     if (result > 0 && result <= Elevator.FloorsCount)
                     {
                         Stops.Add(result);
-                        res = true;
+                        return;
                     }
                     else
                     {
-                        res = false;
+                        ShowWarningMessage();
+                        return;
                     }
-                };
-            }).Wait();
+                }
+            });
 
-            return res;
+            return task;
         }
 
         private State StartMove()
@@ -104,15 +119,13 @@ namespace Elevator
         {
             // if direction is true, it will move up, otherwise down
             var number = direction ? 1 : -1;
+            
 
             for (int i = Elevator.CurrentFloor; direction ? i <= stop : i >= stop; i += number)
             {
-                if (!ParseInputWhileExecuting())
-                {
-                    ShowWarningMessage();
-                }
-
-                Thread.Sleep(10);
+                Elevator.CurrentState = State.Moving;
+                var parse = ParseInputWhileExecuting();
+                Thread.Sleep(80);
 
                 Console.WriteLine($" [{i}]");
 
@@ -127,11 +140,16 @@ namespace Elevator
                 {
                     VisitedStops.Add(i);
                 }
+                var u = i - stop;
+                var d = stop - i;
+                if (u == 2 || d == 2 && parse.IsCompleted)
+                {
+                    parse.Dispose();
+                }
 
                 Elevator.CurrentFloor = i;
-
-                
             }
+            Elevator.CurrentState = State.Interaction;
         }
 
         private int FindNextStop()

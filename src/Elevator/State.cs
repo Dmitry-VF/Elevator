@@ -5,6 +5,7 @@
         Intro,
         CurrentFloor,
         Interaction,
+        Moving,
         End
     }
 }

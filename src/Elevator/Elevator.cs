@@ -18,6 +18,8 @@ namespace Elevator
         public static int FloorsCount { get; set; }
         public static int CurrentFloor { get; set; }
 
+        public static State CurrentState { get; set; }
+
         public void Use()
         {
             while (_state != State.End)

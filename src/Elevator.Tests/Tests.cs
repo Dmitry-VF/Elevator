@@ -133,7 +133,7 @@ namespace Elevator.Tests
         private void AssertOutput(StreamReader output, string text, StringBuilder echo)
         {
             var read = output.ReadLineAsync();
-            read.Wait(100);
+            read.Wait(200);
             if (read.IsCompleted)
             {
                 var outputLine = read.Result;

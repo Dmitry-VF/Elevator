@@ -13,7 +13,7 @@ namespace Elevator
         {
             var input = Console.ReadLine();
 
-            if (input == "X")
+            if (string.Equals(input, "X", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("Have a good day!");
                 return State.End;
