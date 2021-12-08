@@ -140,12 +140,6 @@ namespace Elevator
                 {
                     VisitedStops.Add(i);
                 }
-                var u = i - stop;
-                var d = stop - i;
-                if (u == 2 || d == 2 && parse.IsCompleted)
-                {
-                    parse.Dispose();
-                }
 
                 Elevator.CurrentFloor = i;
             }
