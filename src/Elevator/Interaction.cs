@@ -16,6 +16,7 @@ namespace Elevator
 
         private List<int> Stops { get; set; } = new();
         private List<int> VisitedStops { get; set; } = new();
+        private bool Executing = false;
 
         public override State ProcessInput()
         {
@@ -60,7 +61,6 @@ namespace Elevator
                 {
                     Console.WriteLine("Have a good day!");
                     Environment.Exit(0);
-                    return;
                 }
                 var parsed = int.TryParse(line, out var result);
                 if (parsed)
@@ -68,13 +68,17 @@ namespace Elevator
                     if (result > 0 && result <= Elevator.FloorsCount)
                     {
                         Stops.Add(result);
-                        return;
                     }
                     else
                     {
                         ShowWarningMessage();
-                        return;
+                        ParseInputWhileExecuting();
                     }
+                }
+                if (!Executing)
+                {
+                    Introduction();
+                    StartMove();
                 }
             });
 
@@ -119,12 +123,13 @@ namespace Elevator
         {
             // if direction is true, it will move up, otherwise down
             var number = direction ? 1 : -1;
-            
+
+            Executing = true;
 
             for (int i = Elevator.CurrentFloor; direction ? i <= stop : i >= stop; i += number)
             {
                 Elevator.CurrentState = State.Moving;
-                var parse = ParseInputWhileExecuting();
+                ParseInputWhileExecuting();
                 Thread.Sleep(80);
 
                 Console.WriteLine($" [{i}]");
@@ -144,6 +149,7 @@ namespace Elevator
                 Elevator.CurrentFloor = i;
             }
             Elevator.CurrentState = State.Interaction;
+            Executing = false;
         }
 
         private int FindNextStop()
